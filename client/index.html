@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1220" />
+    <meta
+      name="description"
+      content="Administrative dashboard for the PostgreSQL-backed rate limiter service"
+    />
+    <title>Gatehouse · Rate Limiter</title>
+    <script>
+      (function () {
+        var preference = localStorage.getItem('gatehouse-theme') || 'system';
+        var dark = preference === 'dark' || (preference === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.documentElement.dataset.themePreference = preference;
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+      }());
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
