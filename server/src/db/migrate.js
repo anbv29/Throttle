@@ -43,14 +43,3 @@ export async function runMigrations() {
     connection.release();
   }
 }
-
-const isDirectRun = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isDirectRun) {
-  runMigrations()
-    .then(() => pool.end())
-    .catch(async (error) => {
-      console.error('Migration failed', error);
-      await pool.end();
-      process.exit(1);
-    });
-}

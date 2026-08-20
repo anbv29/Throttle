@@ -45,13 +45,14 @@ export function createApp({ migrateOnRequest = false } = {}) {
   }));
   app.use(express.json({ limit: '32kb' }));
 
-  // Vercel has no long-running startup phase. Initialize the schema on the
-  // first invocation; all concurrent cold starts coordinate through Postgres.
-  if (migrateOnRequest) app.use(ensureServerlessDatabaseReady);
-
   app.get('/health/live', (request, response) => {
     response.json({ status: 'ok', uptimeSeconds: Math.floor(process.uptime()) });
   });
+
+  // Liveness deliberately runs before database initialization. It proves the
+  // Function loaded even when hosted PostgreSQL credentials are incorrect.
+  // Every database-dependent route below still waits for safe migrations.
+  if (migrateOnRequest) app.use(ensureServerlessDatabaseReady);
 
   const readinessHandler = asyncHandler(async (request, response) => {
     const startedAt = process.hrtime.bigint();

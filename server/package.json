@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "migrate": "node src/db/migrate.js",
+    "migrate": "node scripts/migrate.js",
     "test": "node test/unit/run-tests.js",
     "test:integration": "node test/integration/concurrency.test.js",
     "test:all": "npm run test && npm run test:integration",
