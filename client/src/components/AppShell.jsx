@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import {
   Activity, BookOpen, Boxes, Braces, ChevronLeft, CircleGauge, FlaskConical,
   Home, Menu, Network, PanelLeftClose, PanelLeftOpen, Settings, Users, X,
@@ -30,7 +31,7 @@ export function Brand({ onClick }) {
   return (
     <button className="brand-button" onClick={onClick} aria-label="Go to product overview">
       <span className="brand-symbol"><Boxes size={19} /></span>
-      <span><strong>Gatehouse</strong><small>Traffic control</small></span>
+      <span><strong>Throttle</strong><small>Traffic control</small></span>
     </button>
   );
 }
@@ -38,6 +39,7 @@ export function Brand({ onClick }) {
 export function AppShell({ route, navigate, theme, setTheme, apiOnline, children }) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   function go(target) {
     navigate(target);
@@ -61,6 +63,7 @@ export function AppShell({ route, navigate, theme, setTheme, apiOnline, children
                 const active = route === target || (target === '/clients' && route.startsWith('/clients/'));
                 return (
                   <button className={active ? 'active' : ''} key={target} onClick={() => go(target)} title={collapsed ? label : undefined}>
+                    {active && <motion.i className="nav-active-marker" layoutId="nav-active" transition={{ type: 'spring', stiffness: 460, damping: 38 }} />}
                     <Icon size={17} aria-hidden="true" /><span>{label}</span>
                   </button>
                 );
@@ -87,7 +90,18 @@ export function AppShell({ route, navigate, theme, setTheme, apiOnline, children
             <ThemeControl theme={theme} onChange={setTheme} compact />
           </div>
         </GlassSurface>
-        <main className="route-content">{children}</main>
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.main
+            className="route-content"
+            key={route}
+            initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -5 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {children}
+          </motion.main>
+        </AnimatePresence>
       </div>
     </div>
   );

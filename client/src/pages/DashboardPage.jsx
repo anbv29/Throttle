@@ -23,7 +23,7 @@ export function DashboardPage({ overview, analytics, range, setRange, loading, r
   const allowRate = totalRequests ? Math.round((overview.totalAllowed / totalRequests) * 100) : 0;
   return (
     <div className="page-wrap">
-      <PageHeader eyebrow="Traffic command center" title="Your API traffic is under control." description="Live decisions, persistent state, and system health from the real service." actions={<button className="button secondary" onClick={refresh} disabled={loading}><RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh</button>} />
+      <PageHeader eyebrow="Operations" title="Rate limiter overview" description="Current traffic, stored decisions, and service health." actions={<button className="button secondary" onClick={refresh} disabled={loading}><RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh</button>} />
       <div className="kpi-grid six">
         <KpiCard icon={Users} label="Total clients" value={overview.totalClients.toLocaleString()} context="Configured policies" loading={loading} />
         <KpiCard icon={Gauge} label="Active clients" value={(overview.activeClients ?? 0).toLocaleString()} context="Traffic in last 5 minutes" tone="violet" loading={loading} />

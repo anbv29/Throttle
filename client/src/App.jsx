@@ -24,7 +24,7 @@ function getHashRoute() {
 }
 
 function useTheme() {
-  const [theme, setThemeState] = useState(() => localStorage.getItem('gatehouse-theme') || 'system');
+  const [theme, setThemeState] = useState(() => localStorage.getItem('throttle-theme') || 'system');
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
@@ -40,7 +40,7 @@ function useTheme() {
   }, [theme]);
 
   function setTheme(nextTheme) {
-    localStorage.setItem('gatehouse-theme', nextTheme);
+    localStorage.setItem('throttle-theme', nextTheme);
     setThemeState(nextTheme);
   }
   return [theme, setTheme];
@@ -132,9 +132,32 @@ export default function App() {
     catch (deleteError) { setError(deleteError.message); }
   }
 
-  async function checkClient(clientKey) {
-    const response = await api.check(clientKey);
-    window.setTimeout(() => loadBaseData({ quiet: true }), 150);
+  async function createTestClient() {
+    const clientKey = 'throttle_demo';
+    if (clients.some((client) => client.clientKey === clientKey)) return clientKey;
+    setSaving(true);
+    try {
+      await api.createClient({
+        clientKey,
+        algorithm: 'sliding_window',
+        maxRequests: 20,
+        windowSeconds: 60,
+      });
+      showNotice('Test client created');
+    } catch (createError) {
+      if (createError.code !== 'DUPLICATE_CLIENT_KEY') throw createError;
+    } finally {
+      setSaving(false);
+    }
+    await loadBaseData();
+    return clientKey;
+  }
+
+  async function checkClient(clientKey, options) {
+    const response = await api.check(clientKey, options);
+    if (options?.refresh !== false) {
+      window.setTimeout(() => loadBaseData({ quiet: true }), 150);
+    }
     return { ...response.body, checkedAt: new Date().toISOString() };
   }
 
@@ -148,7 +171,7 @@ export default function App() {
   } else if (route.startsWith('/clients/')) {
     page = <ClientDetailsPage clientKey={decodeURIComponent(route.slice('/clients/'.length))} clients={clients} navigate={navigate} onCheck={checkClient} />;
   } else if (route === '/tester') {
-    page = <TesterPage clients={clients} onCheck={checkClient} />;
+    page = <TesterPage clients={clients} onCheck={checkClient} onCreateTestClient={createTestClient} creatingClient={saving} />;
   } else if (route === '/analytics') {
     page = <AnalyticsPage analytics={analytics} overview={overview} range={range} setRange={setRange} loading={loading} />;
   } else if (route === '/how-it-works') {

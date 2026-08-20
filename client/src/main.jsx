@@ -4,6 +4,7 @@ import App from './App.jsx';
 import './styles.css';
 import './styles-pages.css';
 import './styles-education.css';
+import './styles-authored.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

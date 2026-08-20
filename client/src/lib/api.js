@@ -49,11 +49,12 @@ export const api = {
     `/api/v1/admin/clients/${encodeURIComponent(clientKey)}`,
     { method: 'DELETE' },
   ),
-  check: async (clientKey) => {
+  check: async (clientKey, { signal } = {}) => {
     try {
       return await apiRequest('/api/v1/rate-limit/check', {
         method: 'POST',
         body: JSON.stringify({ clientKey }),
+        signal,
       });
     } catch (error) {
       if (error.status === 429) {

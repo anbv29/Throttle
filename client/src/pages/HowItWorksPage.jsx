@@ -77,7 +77,7 @@ function ConcurrencySection() {
 export function HowItWorksPage() {
   return (
     <div className="page-wrap educational-page">
-      <PageHeader eyebrow="From request to decision" title="How Gatehouse works" description="A visual guide to algorithms, database transactions, concurrency safety, and every step the backend performs." />
+      <PageHeader eyebrow="From request to decision" title="How Throttle works" description="A visual guide to algorithms, database transactions, concurrency safety, and every step the backend performs." />
       <GlassSurface className="big-picture-flow"><div className="architecture-node"><Users /><small>YOUR APPLICATION</small><strong>Can this client make a request?</strong></div><ArrowDown /><div className="architecture-node primary"><ShieldCheck /><small>RATE LIMITER SERVICE</small><strong>Load · Lock · Calculate · Persist</strong></div><div className="decision-branches"><span><CheckCircle2 /> ALLOW</span><span><XCircle /> DENY</span></div></GlassSurface>
       <section className="educational-section"><div className="section-intro"><p className="eyebrow">The request lifecycle</p><h2>Five precise steps. One atomic decision.</h2><p>Select a step for a beginner-friendly explanation and the backend detail beneath it.</p></div><ProcessSteps /></section>
       <section className="educational-section"><div className="section-intro"><p className="eyebrow">Algorithm laboratory</p><h2>See the two control models behave.</h2><p>These are clearly labeled interactive explainers; production state remains in PostgreSQL.</p></div><div className="explainer-grid"><TokenExplainer /><WindowExplainer /></div></section>

@@ -9,7 +9,7 @@ export function AnalyticsPage({ analytics, overview, range, setRange, loading })
   const peak = Math.max(0, ...points.map((point) => point.incoming));
   return (
     <div className="page-wrap">
-      <PageHeader eyebrow="PostgreSQL activity history" title="Traffic & analytics" description="Every point is calculated from committed rate-limit decisions—never fake production data." actions={<StatusBadge tone="success"><Database size={13} /> Durable data</StatusBadge>} />
+      <PageHeader eyebrow="PostgreSQL activity" title="Traffic history" description="Allowed, denied, and processing-time measurements grouped from committed decisions." actions={<StatusBadge tone="success"><Database size={13} /> Durable data</StatusBadge>} />
       <div className="analytics-kpis">
         <GlassSurface><Activity /><span><small>Requests in range</small><strong>{windowTotal.toLocaleString()}</strong><p>Selected {range} window</p></span></GlassSurface>
         <GlassSurface><CheckCircle2 /><span><small>Lifetime allowed</small><strong>{overview.totalAllowed.toLocaleString()}</strong><p>Committed decisions</p></span></GlassSurface>

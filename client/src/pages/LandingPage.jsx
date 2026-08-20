@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
-  Activity, ArrowRight, Boxes, Braces, Check, CircleGauge, CloudCog, Cpu,
-  CreditCard, FlaskConical, KeyRound, Network, ShieldCheck, Sparkles, Zap,
+  Activity, ArrowRight, Boxes, Braces, Check, CloudCog, Cpu,
+  CreditCard, FlaskConical, KeyRound, Network, ShieldCheck, Zap,
 } from 'lucide-react';
 import { Brand } from '../components/AppShell.jsx';
 import { GlassSurface, StatusBadge } from '../components/Glass.jsx';
@@ -27,7 +27,7 @@ const useCases = [
 function RequestFlow() {
   return (
     <GlassSurface className="hero-flow" aria-label="Request flow through the rate limiter">
-      <div className="flow-toolbar"><span><i /> Live architecture</span><small>POST /api/v1/rate-limit/check</small></div>
+      <div className="flow-toolbar"><span><i /> Request path</span><small>POST /api/v1/rate-limit/check</small></div>
       <div className="flow-canvas">
         <div className="flow-node source"><small>CALLERS</small><strong>Applications</strong><span>API keys · Services</span></div>
         <div className="flow-connector first"><i /><i /><i /></div>
@@ -111,34 +111,34 @@ export function LandingPage({ navigate, theme, setTheme, apiOnline }) {
       <main>
         <section className="hero-section">
           <div className="hero-copy">
-            <div className="hero-kicker"><Sparkles size={14} /> PostgreSQL-backed traffic control</div>
-            <h1>Control API traffic.<br /><span>Before traffic controls you.</span></h1>
-            <p>A standalone rate-limiting service that protects APIs with configurable algorithms, persistent state, and concurrency-safe decisions.</p>
+            <div className="hero-kicker">RATE LIMITING / POSTGRESQL</div>
+            <h1>A rate limiter<br /><span>you can inspect.</span></h1>
+            <p>Define a policy per client, send a key, and get an atomic allow or deny decision. State and request history stay in PostgreSQL.</p>
             <div className="hero-actions">
               <button className="button primary large" onClick={() => navigate('/dashboard')}>Explore dashboard <ArrowRight size={16} /></button>
               <button className="button secondary large" onClick={() => navigate('/tester')}><FlaskConical size={16} /> Try live tester</button>
             </div>
-            <div className="hero-proof"><span><Check /> Real PostgreSQL state</span><span><Check /> Atomic concurrency</span><span><Check /> Two algorithms</span></div>
+            <div className="hero-proof"><span><Check /> Row-level locking</span><span><Check /> Durable state</span><span><Check /> Token bucket + sliding window</span></div>
           </div>
           <RequestFlow />
         </section>
 
         <section className="landing-section">
-          <div className="section-intro"><p className="eyebrow">Why Gatehouse</p><h2>Infrastructure protection with context.</h2><p>Everything you need to configure, observe, test, and understand rate-limiting decisions.</p></div>
+          <div className="section-intro"><p className="eyebrow">What it does</p><h2>One small service between traffic and your application.</h2><p>Configure limits, inspect current state, and test the exact endpoint your services call.</p></div>
           <div className="benefit-grid">{benefits.map(([Icon, title, description]) => <GlassSurface className="benefit-card" key={title}><Icon size={19} /><h3>{title}</h3><p>{description}</p></GlassSurface>)}</div>
         </section>
 
         <section className="landing-section algorithms-section">
-          <div className="section-intro"><p className="eyebrow">Algorithms</p><h2>Flexible bursts or exact windows.</h2><p>Choose the control model that matches each caller's workload.</p></div>
+          <div className="section-intro"><p className="eyebrow">Algorithms</p><h2>Pick the behavior, per client.</h2><p>Token Bucket allows a bounded burst. Sliding Window enforces an exact rolling count.</p></div>
           <AlgorithmShowcase />
         </section>
 
         <section className="landing-section">
-          <div className="section-intro"><p className="eyebrow">Built for real systems</p><h2>One control plane. Many workloads.</h2></div>
+          <div className="section-intro"><p className="eyebrow">Common uses</p><h2>The same decision endpoint across your stack.</h2></div>
           <div className="use-case-grid">{useCases.map(([Icon, title, description]) => <GlassSurface className="use-case-card" key={title}><span><Icon size={17} /></span><div><h3>{title}</h3><p>{description}</p></div></GlassSurface>)}</div>
         </section>
 
-        <GlassSurface className="landing-cta"><div><p className="eyebrow">Ready to test the real service?</p><h2>See concurrency-safe decisions happen live.</h2></div><button className="button primary large" onClick={() => navigate('/tester')}>Open request lab <ArrowRight size={16} /></button></GlassSurface>
+        <GlassSurface className="landing-cta"><div><p className="eyebrow">Request lab</p><h2>Send real concurrent checks against a configured client.</h2></div><button className="button primary large" onClick={() => navigate('/tester')}>Open request lab <ArrowRight size={16} /></button></GlassSurface>
       </main>
       <footer className="landing-footer"><Brand onClick={() => navigate('/')} /><p>Persistent API traffic control, built with PERN.</p></footer>
     </div>

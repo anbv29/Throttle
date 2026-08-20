@@ -1,6 +1,6 @@
-# Gatehouse Rate Limiter Service
+# Throttle Rate Limiter Service
 
-Gatehouse is a standalone, networked rate-limiting service built entirely with the PERN stack: PostgreSQL, Express, React, and Node.js. Applications call one HTTP endpoint with a client key. Gatehouse loads that client's policy, makes an atomic decision using either Token Bucket or Sliding Window, persists the result, and returns `ALLOW` or `DENY` semantics with standard rate-limit headers.
+Throttle is a standalone, networked rate-limiting service built entirely with the PERN stack: PostgreSQL, Express, React, and Node.js. Applications call one HTTP endpoint with a client key. Throttle loads that client's policy, makes an atomic decision using either Token Bucket or Sliding Window, persists the result, and returns `ALLOW` or `DENY` semantics with standard rate-limit headers.
 
 The repository includes a responsive administrative dashboard, PostgreSQL migrations, Docker Compose development infrastructure, unit and database-backed API/concurrency tests, request tracing and health probes, and a 550-concurrent-request load test.
 
@@ -55,7 +55,7 @@ docker-compose.yml             PostgreSQL, API, and dashboard
 - Node.js 20.19+ runs the service and the built-in test runner.
 - Express 5 exposes the REST API.
 - `pg` performs explicit parameterized SQL, transactions, and row locks; there is no ORM.
-- React 19 and Vite 7 power the dashboard.
+- React 19 and Vite 7 power the dashboard; Motion provides reduced-motion-aware route, chart, navigation, and tester transitions.
 - Nginx serves the production frontend container and proxies `/api` to Express.
 - Docker Compose runs the complete local stack.
 
@@ -319,7 +319,7 @@ The responsive, keyboard-accessible product interface provides:
 - A public landing page and a glass-style application shell with persisted Light, Dark, and System themes.
 - A live operations dashboard with configured/active clients, allow/deny totals, measured decision latency, database health, recent events, and real PostgreSQL traffic buckets.
 - Searchable/filterable client management, algorithm-aware creation/editing, and detail pages showing current Token Bucket or Sliding Window state.
-- A request lab with animated backend stages and a configurable 1–1,000 request concurrency test that reports real decisions, errors, and achieved requests/second.
+- A request lab with animated backend stages and a configurable 1–1,000 request worker-pool test that reports real decisions, transport errors, achieved requests/second, and supports cancellation.
 - A dedicated analytics page with actual range-filtered traffic and latency data.
 - How It Works, API Guide, Architecture, and Settings pages with interactive algorithm explainers, request examples, system topology, health status, and theme controls.
 

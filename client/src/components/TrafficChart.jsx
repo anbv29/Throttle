@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { GlassSurface, Skeleton } from './Glass.jsx';
 
 function ChartBars({ points }) {
   const maximum = Math.max(1, ...points.map((point) => point.incoming));
+  const reduceMotion = useReducedMotion();
   return (
     <div className="traffic-bars" role="img" aria-label="Traffic history showing incoming, allowed, and denied requests">
       <div className="chart-grid-lines" aria-hidden="true"><i /><i /><i /><i /></div>
@@ -12,10 +14,15 @@ function ChartBars({ points }) {
         const deniedHeight = Math.max(0, (point.denied / maximum) * 100);
         return (
           <div className="traffic-column" key={`${point.timestamp}-${index}`}>
-            <div className="bar-stack" style={{ height: `${incomingHeight}%` }}>
+            <motion.div
+              className="bar-stack"
+              initial={reduceMotion ? false : { height: 0 }}
+              animate={{ height: `${incomingHeight}%` }}
+              transition={{ duration: 0.45, delay: reduceMotion ? 0 : Math.min(index * 0.012, 0.25), ease: [0.22, 1, 0.36, 1] }}
+            >
               <span className="bar allowed" style={{ height: `${point.incoming ? (allowedHeight / incomingHeight) * 100 : 0}%` }} />
               <span className="bar denied" style={{ height: `${point.incoming ? (deniedHeight / incomingHeight) * 100 : 0}%` }} />
-            </div>
+            </motion.div>
             <div className="chart-tooltip">
               <strong>{new Date(point.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</strong>
               <span>{point.incoming} incoming</span>

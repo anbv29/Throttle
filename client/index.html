@@ -8,10 +8,10 @@
       name="description"
       content="Administrative dashboard for the PostgreSQL-backed rate limiter service"
     />
-    <title>Gatehouse · Rate Limiter</title>
+    <title>Throttle · Rate Limiter</title>
     <script>
       (function () {
-        var preference = localStorage.getItem('gatehouse-theme') || 'system';
+        var preference = localStorage.getItem('throttle-theme') || 'system';
         var dark = preference === 'dark' || (preference === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.dataset.theme = dark ? 'dark' : 'light';
         document.documentElement.dataset.themePreference = preference;
