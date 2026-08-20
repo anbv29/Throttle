@@ -80,7 +80,6 @@ test('PostgreSQL transactions preserve concurrency limits', {
       assert.equal(firstDecision.headers['x-ratelimit-remaining'], '1');
       assert.match(firstDecision.headers['x-ratelimit-reset'], /^\d+$/);
 
-      // A fresh Express app reads the same PostgreSQL bucket instead of resetting it.
       const restartedApplication = createApp();
       await request(restartedApplication)
         .post('/api/v1/rate-limit/check')

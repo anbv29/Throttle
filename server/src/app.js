@@ -13,6 +13,7 @@ import { runMigrations } from './db/migrate.js';
 
 let migrationPromise;
 
+// Prepares the database before a serverless request continues.
 function ensureServerlessDatabaseReady(request, response, next) {
   if (!migrationPromise) {
     migrationPromise = runMigrations().catch((error) => {
@@ -23,6 +24,7 @@ function ensureServerlessDatabaseReady(request, response, next) {
   migrationPromise.then(() => next()).catch(next);
 }
 
+// Creates and configures the Express application.
 export function createApp({ migrateOnRequest = false } = {}) {
   const app = express();
 
@@ -49,9 +51,6 @@ export function createApp({ migrateOnRequest = false } = {}) {
     response.json({ status: 'ok', uptimeSeconds: Math.floor(process.uptime()) });
   });
 
-  // Liveness deliberately runs before database initialization. It proves the
-  // Function loaded even when hosted PostgreSQL credentials are incorrect.
-  // Every database-dependent route below still waits for safe migrations.
   if (migrateOnRequest) app.use(ensureServerlessDatabaseReady);
 
   const readinessHandler = asyncHandler(async (request, response) => {
@@ -76,6 +75,4 @@ export function createApp({ migrateOnRequest = false } = {}) {
   return app;
 }
 
-// Vercel detects this default Express export and turns it into one Function.
-// The regular local/Docker server continues to use createApp() from server.js.
 export default createApp({ migrateOnRequest: true });

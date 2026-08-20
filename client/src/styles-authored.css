@@ -1,8 +1,3 @@
-/*
- * Throttle's authored UI layer.
- * Intentionally plain, dense, and operational: solid surfaces, visible rules,
- * readable type, and one cobalt accent instead of decorative glass/gradients.
- */
 :root {
   --bg: #f4f3ef;
   --bg-deep: #ebeae5;
@@ -103,7 +98,6 @@ button, input, select { font-size: 14px; }
 .status-badge i { width: 5px; height: 5px; box-shadow: none; }
 .eyebrow { margin-bottom: 10px; font-size: 11px; letter-spacing: .11em; }
 
-/* Shell */
 .product-shell { grid-template-columns: 244px minmax(0,1fr); }
 .product-shell.sidebar-collapsed { grid-template-columns: 72px minmax(0,1fr); }
 .app-sidebar {
@@ -153,7 +147,6 @@ button, input, select { font-size: 14px; }
 .page-heading h1 { max-width: 920px; font-size: clamp(30px, 3.2vw, 48px); line-height: 1.05; }
 .page-description { max-width: 680px; margin-top: 11px; font-size: 15px; line-height: 1.55; }
 
-/* Readable product panels */
 .panel-heading h2 { font-size: 17px; }
 .panel-heading p { margin-top: 5px; font-size: 12px; line-height: 1.45; }
 .kpi-grid.six { gap: 10px; }
@@ -176,7 +169,6 @@ button, input, select { font-size: 14px; }
 .status-list strong { font-size: 13px; }
 .status-list small, .correctness-note p { font-size: 11px; }
 
-/* Client management */
 .client-toolbar, .client-table-panel { border-radius: 8px; }
 .search-field, .filter-tabs, .premium-field input { border-radius: 5px; }
 .search-field input, .premium-field input { height: 42px; font-size: 13px; }
@@ -189,7 +181,6 @@ button, input, select { font-size: 14px; }
 .client-identity small, .limit-cell small, .last-activity { font-size: 10px; }
 .algorithm-cell { font-size: 12px; }
 
-/* Tester */
 .request-control-panel, .request-flow-panel { border-radius: 8px; padding: 22px; }
 .selected-policy, .send-request-button, .tester-result, .bulk-progress-card { border-radius: 6px; }
 .selected-policy small, .tester-result small { font-size: 10px; }
@@ -221,7 +212,6 @@ button, input, select { font-size: 14px; }
 .tester-empty-client p { margin: 4px 0 0; color: var(--muted); font-size: 11px; line-height: 1.4; }
 .tester-empty-client .button { flex: 0 0 auto; }
 
-/* Landing: editorial rather than template-like */
 .landing-page { background: var(--bg); }
 .ambient { display: none; }
 .landing-nav {
@@ -254,7 +244,6 @@ button, input, select { font-size: 14px; }
 .benefit-card p, .use-case-card p { font-size: 12px; line-height: 1.55; }
 .algorithm-showcase > p { font-size: 13px; }
 
-/* Educational and details pages */
 .process-detail, .explainer-card, .code-panel, .architecture-detail, .settings-card, .state-visual, .client-summary-card, .configuration-card { border-radius: 8px; }
 .process-step-list button { border-radius: 5px; }
 .process-step-list strong, .architecture-layer strong { font-size: 13px; }

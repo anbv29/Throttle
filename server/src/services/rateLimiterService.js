@@ -3,10 +3,10 @@ import { AppError } from '../utils/AppError.js';
 import { checkSlidingWindow } from './slidingWindowService.js';
 import { checkTokenBucket } from './tokenBucketService.js';
 
+// Checks and records one rate-limit decision atomically.
 export async function checkRateLimit(clientKey) {
   const requestStartedAt = performance.now();
   return withTransaction(async (connection) => {
-    // This row lock is the per-client mutex shared by every backend instance.
     const configurationResult = await connection.query(
       `SELECT id, client_key, algorithm, requests_per_second, burst_size,
               max_requests, window_seconds

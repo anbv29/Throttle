@@ -3,7 +3,6 @@ import { env } from '../config/env.js';
 
 const { Pool, types } = pg;
 
-// PostgreSQL int8 values are safe here because counters are exposed as numbers.
 types.setTypeParser(20, (value) => Number(value));
 types.setTypeParser(1700, (value) => Number(value));
 

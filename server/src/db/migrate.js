@@ -5,12 +5,12 @@ import { pool } from './pool.js';
 
 const migrationsDirectory = fileURLToPath(new URL('./migrations', import.meta.url));
 
+// Applies pending database migrations in a single locked transaction.
 export async function runMigrations() {
   const connection = await pool.connect();
 
   try {
     await connection.query('BEGIN');
-    // One transaction-level advisory lock makes concurrent serverless cold starts safe.
     await connection.query('SELECT pg_advisory_xact_lock($1)', [781_240_611]);
     await connection.query(`
       CREATE TABLE IF NOT EXISTS schema_migrations (
