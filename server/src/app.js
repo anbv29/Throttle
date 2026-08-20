@@ -13,6 +13,53 @@ import { runMigrations } from './db/migrate.js';
 
 let migrationPromise;
 
+const exposedRateLimitHeaders = [
+  'X-RateLimit-Limit',
+  'X-RateLimit-Remaining',
+  'X-RateLimit-Reset',
+  'Retry-After',
+];
+
+// Checks whether the browser origin matches the public request origin.
+function isSameOrigin(request, origin) {
+  const forwardedProtocol = request.get('x-forwarded-proto')?.split(',')[0].trim();
+  const forwardedHost = request.get('x-forwarded-host')?.split(',')[0].trim();
+  const protocol = forwardedProtocol || request.protocol;
+  const host = forwardedHost || request.get('host');
+  return Boolean(host && origin === `${protocol}://${host}`);
+}
+
+// Allows secure Vercel preview deployments to call the API.
+function isVercelPreviewOrigin(origin) {
+  if (!process.env.VERCEL || !origin) return false;
+  try {
+    const parsedOrigin = new URL(origin);
+    return parsedOrigin.protocol === 'https:' && parsedOrigin.hostname.endsWith('.vercel.app');
+  } catch {
+    return false;
+  }
+}
+
+// Builds the CORS policy for the current request.
+function createCorsOptions(request, callback) {
+  const origin = request.get('origin');
+  const allowed = !origin
+    || env.corsOrigins.includes('*')
+    || env.corsOrigins.includes(origin)
+    || isSameOrigin(request, origin)
+    || isVercelPreviewOrigin(origin);
+
+  if (!allowed) {
+    callback(new AppError(403, 'CORS_ORIGIN_DENIED', 'This origin is not allowed'));
+    return;
+  }
+
+  callback(null, {
+    origin: Boolean(origin),
+    exposedHeaders: exposedRateLimitHeaders,
+  });
+}
+
 // Prepares the database before a serverless request continues.
 function ensureServerlessDatabaseReady(request, response, next) {
   if (!migrationPromise) {
@@ -31,20 +78,7 @@ export function createApp({ migrateOnRequest = false } = {}) {
   app.disable('x-powered-by');
   app.use(requestContext);
   app.use(helmet());
-  app.use(cors({
-    origin(origin, callback) {
-      if (!origin || env.corsOrigins.includes('*') || env.corsOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new AppError(403, 'CORS_ORIGIN_DENIED', 'This origin is not allowed'));
-    },
-    exposedHeaders: [
-      'X-RateLimit-Limit',
-      'X-RateLimit-Remaining',
-      'X-RateLimit-Reset',
-      'Retry-After',
-    ],
-  }));
+  app.use(cors(createCorsOptions));
   app.use(express.json({ limit: '32kb' }));
 
   app.get('/health/live', (request, response) => {

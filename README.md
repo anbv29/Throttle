@@ -270,50 +270,46 @@ If the dashboard displays `The API is unavailable` or an old `Request failed wit
 
 ## Deploy to Vercel
 
-Deploy this npm-workspace monorepo as **two Vercel projects** connected to the
-same repository. A localhost database URL cannot work from Vercel; create a
-hosted PostgreSQL database first (a pooled connection URL is recommended).
+The recommended deployment is one Vercel Services project. It serves the Vite
+frontend and Express backend from the same domain, so browser requests use
+relative `/api` and `/health` paths without `VITE_API_URL` or cross-project
+CORS configuration. A localhost database URL cannot work from Vercel; create a
+hosted PostgreSQL database first and use its pooled connection URL.
 
-### 1. API project
-
-Import the repository and set **Root Directory** to `server`. The included
-`server/vercel.json` makes `src/app.js` an Express Function and bundles the SQL
-migrations. Add these Vercel environment variables for Production and Preview:
+1. Import the repository with the repository root as **Root Directory**.
+2. Set **Framework Preset** to **Services** in Build and Deployment settings.
+3. Add these variables for Production and Preview:
 
 ```text
 DATABASE_URL=<pooled hosted PostgreSQL connection URL>
 DATABASE_SSL=true
 DATABASE_POOL_MAX=5
-CORS_ORIGIN=https://your-throttle-frontend.vercel.app
 REQUEST_LOGGING=true
 ```
 
-Deploy it, then verify:
+4. Deploy and verify these URLs on the same domain:
 
 ```text
-https://your-throttle-api.vercel.app/health/ready
+https://your-throttle.vercel.app/health/live
+https://your-throttle.vercel.app/health/ready
 ```
 
-The first invocation applies pending migrations. Concurrent cold starts use a
-PostgreSQL advisory lock, so only one migration transaction can run at a time.
-If the frontend URL is not known yet, temporarily use `CORS_ORIGIN=*`, deploy the
-frontend, then replace `*` with the exact frontend URL and redeploy the API.
+The root `vercel.json` routes `/api/*` and `/health/*` to Express and all other
+requests to Vite. The first backend invocation applies pending migrations.
+Concurrent cold starts use a PostgreSQL advisory lock, so they cannot race.
 
-### 2. Frontend project
-
-Import the same repository again and set **Root Directory** to `client`. Add:
+The previous two-project layout remains supported by `server/vercel.json` and
+`client/vercel.json`. If using it, set the server Root Directory to `server`, the
+client Root Directory to `client`, and configure:
 
 ```text
-VITE_API_URL=https://your-throttle-api.vercel.app
+Server: CORS_ORIGIN=https://your-throttle-frontend.vercel.app
+Client: VITE_API_URL=https://your-throttle-api.vercel.app
 ```
 
-The included `client/vercel.json` selects Vite, runs the production build, and
-publishes `dist`. `VITE_API_URL` is embedded at build time, so redeploy the
-frontend after changing it.
-
-Do not deploy the repository root as one Vercel project. The local `server.js`
-entry point starts a long-running HTTP listener and is intended for local/Docker
-runtime; Vercel uses the default Express export from `server/src/app.js` instead.
+`VITE_API_URL` is embedded during the frontend build, so changing it requires a
+frontend redeployment. Vercel preview origins are accepted automatically; an
+exact `CORS_ORIGIN` is still recommended for a stable custom frontend domain.
 
 ## Tests
 
