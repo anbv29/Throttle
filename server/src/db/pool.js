@@ -10,7 +10,7 @@ types.setTypeParser(1700, (value) => Number(value));
 export const pool = new Pool({
   connectionString: env.databaseUrl,
   ssl: env.databaseSsl ? { rejectUnauthorized: false } : false,
-  max: 20,
+  max: env.databasePoolMax,
   idleTimeoutMillis: 30_000,
   connectionTimeoutMillis: 5_000,
 });

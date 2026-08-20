@@ -268,6 +268,53 @@ Then `npm run dev` starts the Express and Vite processes. The helper expects Pos
 
 If the dashboard displays `The API is unavailable` or an old `Request failed with status 500` message, check `http://localhost:4000/health/ready`. Start PostgreSQL first and then run `npm run dev`. The dashboard marks the service offline and automatically retries every five seconds.
 
+## Deploy to Vercel
+
+Deploy this npm-workspace monorepo as **two Vercel projects** connected to the
+same repository. A localhost database URL cannot work from Vercel; create a
+hosted PostgreSQL database first (a pooled connection URL is recommended).
+
+### 1. API project
+
+Import the repository and set **Root Directory** to `server`. The included
+`server/vercel.json` makes `src/app.js` an Express Function and bundles the SQL
+migrations. Add these Vercel environment variables for Production and Preview:
+
+```text
+DATABASE_URL=<pooled hosted PostgreSQL connection URL>
+DATABASE_SSL=true
+DATABASE_POOL_MAX=5
+CORS_ORIGIN=https://your-throttle-frontend.vercel.app
+REQUEST_LOGGING=true
+```
+
+Deploy it, then verify:
+
+```text
+https://your-throttle-api.vercel.app/health/ready
+```
+
+The first invocation applies pending migrations. Concurrent cold starts use a
+PostgreSQL advisory lock, so only one migration transaction can run at a time.
+If the frontend URL is not known yet, temporarily use `CORS_ORIGIN=*`, deploy the
+frontend, then replace `*` with the exact frontend URL and redeploy the API.
+
+### 2. Frontend project
+
+Import the same repository again and set **Root Directory** to `client`. Add:
+
+```text
+VITE_API_URL=https://your-throttle-api.vercel.app
+```
+
+The included `client/vercel.json` selects Vite, runs the production build, and
+publishes `dist`. `VITE_API_URL` is embedded at build time, so redeploy the
+frontend after changing it.
+
+Do not deploy the repository root as one Vercel project. The local `server.js`
+entry point starts a long-running HTTP listener and is intended for local/Docker
+runtime; Vercel uses the default Express export from `server/src/app.js` instead.
+
 ## Tests
 
 Deterministic unit tests do not require a database:

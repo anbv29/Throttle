@@ -22,6 +22,11 @@ export const env = {
     process.env.DATABASE_URL ??
     'postgresql://rate_limiter:rate_limiter_dev@localhost:5432/rate_limiter',
   databaseSsl: toBoolean(process.env.DATABASE_SSL),
+  databasePoolMax: toPositiveInteger(
+    process.env.DATABASE_POOL_MAX,
+    process.env.VERCEL ? 5 : 20,
+    'DATABASE_POOL_MAX',
+  ),
   corsOrigins: (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
     .split(',')
     .map((origin) => origin.trim())

@@ -9,8 +9,21 @@ import { adminRouter } from './routes/adminRoutes.js';
 import { rateLimitRouter } from './routes/rateLimitRoutes.js';
 import { asyncHandler } from './utils/asyncHandler.js';
 import { AppError } from './utils/AppError.js';
+import { runMigrations } from './db/migrate.js';
 
-export function createApp() {
+let migrationPromise;
+
+function ensureServerlessDatabaseReady(request, response, next) {
+  if (!migrationPromise) {
+    migrationPromise = runMigrations().catch((error) => {
+      migrationPromise = undefined;
+      throw error;
+    });
+  }
+  migrationPromise.then(() => next()).catch(next);
+}
+
+export function createApp({ migrateOnRequest = false } = {}) {
   const app = express();
 
   app.disable('x-powered-by');
@@ -31,6 +44,10 @@ export function createApp() {
     ],
   }));
   app.use(express.json({ limit: '32kb' }));
+
+  // Vercel has no long-running startup phase. Initialize the schema on the
+  // first invocation; all concurrent cold starts coordinate through Postgres.
+  if (migrateOnRequest) app.use(ensureServerlessDatabaseReady);
 
   app.get('/health/live', (request, response) => {
     response.json({ status: 'ok', uptimeSeconds: Math.floor(process.uptime()) });
@@ -57,3 +74,7 @@ export function createApp() {
 
   return app;
 }
+
+// Vercel detects this default Express export and turns it into one Function.
+// The regular local/Docker server continues to use createApp() from server.js.
+export default createApp({ migrateOnRequest: true });
